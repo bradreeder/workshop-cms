@@ -1,0 +1,46 @@
+const fs = require('fs');
+
+function handler(req, res) {
+  const url = req.url;
+  const ext = url.split('.')[1];
+  const request = req.method;
+
+  console.log(url);
+
+  if (url === '/') {
+    fs.readFile(`${__dirname}/../public/index.html`, (err, data) => {
+      if (err) {
+        res.writeHead(404);
+        res.end('<h1>404 -- Page requested cannot be found.</h1>');
+      } else {
+        res.writeHead(200, { 'Content-type': 'text/html' });
+        res.end(data);
+      }
+    });
+  } else if (url.includes('public')){
+    fs.readFile(`${__dirname}/../${url}`, (err, data) => {
+      if (err) {
+        res.writeHead(404);
+        res.end('<h1>404 -- Page requested cannot be found.</h1>');
+      } else {
+        res.writeHead(200, { 'Content-type': `text/${ext}` });
+        res.end(data);
+      }
+    });
+  } else if (url.includes('img')) {
+    fs.readFile(`${__dirname}/../public/${url}`, (err, data) => {
+      if (err) {
+        res.writeHead(404);
+        res.end('<h1>404 -- Page requested cannot be found.</h1>');
+      } else {
+        res.writeHead(200, { 'Content-type': `image/${ext}` });
+        res.end(data);
+      }
+    });
+  } else {
+    res.writeHead(404);
+    res.end('<h1>404 -- Page requested cannot be found.</h1>');
+  }
+}
+
+module.exports = handler;
